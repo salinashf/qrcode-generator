@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +52,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * QR code generator.
@@ -60,20 +62,21 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class QrcodeGenerator extends javax.swing.JFrame {
 
-    private static final String ADDRESS_TEMPLATE =
-    "BEGIN:VCARD\n"
-    + "VERSION:3.0\n"
-    + "N:{LN};{FN};\n"
-    + "FN:{FN} {LN}\n"
-    + "TITLE:{TITLE}/{COMPANYNAME}\n"
-    + "TEL;TYPE=WORK;VOICE:{PHONE}\n"
-    + "EMAIL;TYPE=WORK:{EMAIL}\n"
-    + "ADR;TYPE=INTL,POSTAL,WORK:;;{STREET};{CITY};{STATE};{ZIP};{COUNTRY}\n"
-    + "URL;TYPE=WORK:{WEBSITE}\n"
-    + "END:VCARD";
+    private static final String ADDRESS_TEMPLATE
+            = "BEGIN:VCARD\n"
+            + "VERSION:3.0\n"
+            + "N:{LN};{FN};\n"
+            + "FN:{FN} {LN}\n"
+            + "TITLE:{TITLE}/{COMPANYNAME}\n"
+            + "TEL;TYPE=WORK;VOICE:{PHONE}\n"
+            + "EMAIL;TYPE=WORK:{EMAIL}\n"
+            + "ADR;TYPE=INTL,POSTAL,WORK:;;{STREET};{CITY};{STATE};{ZIP};{COUNTRY}\n"
+            + "URL;TYPE=WORK:{WEBSITE}\n"
+            + "END:VCARD";
 
     private BufferedImage image;
     private JFileChooser chooser1 = new JFileChooser();
+
     private class QRCodePanel extends javax.swing.JPanel {
 
         @Override
@@ -86,6 +89,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
     }
 
     private class FilterPNG extends javax.swing.filechooser.FileFilter {
+
         public String getDescription() {
             return "PNG files";
         }
@@ -109,7 +113,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
         }
 
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-            if (flavor.equals( DataFlavor.imageFlavor) && image != null) {
+            if (flavor.equals(DataFlavor.imageFlavor) && image != null) {
                 return image;
             } else {
                 throw new UnsupportedFlavorException(flavor);
@@ -122,7 +126,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
             return flavors;
         }
 
-        public boolean isDataFlavorSupported( DataFlavor flavor) {
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
             DataFlavor[] flavors = getTransferDataFlavors();
             for (int i = 0; i < flavors.length; i++) {
                 if (flavor.equals(flavors[i])) {
@@ -134,7 +138,9 @@ public class QrcodeGenerator extends javax.swing.JFrame {
         }
     }
 
-    /** Creates new form */
+    /**
+     * Creates new form
+     */
     public QrcodeGenerator() {
         initComponents();
         XMLDecoder d;
@@ -144,30 +150,30 @@ public class QrcodeGenerator extends javax.swing.JFrame {
         String width = null;
         String index = null;
         try {
-           d = new XMLDecoder(new BufferedInputStream(new FileInputStream("qrcode.xml")));
-           jTextField1.setText((String) d.readObject());
-           jTextField2.setText((String) d.readObject());
-           jTextField3.setText((String) d.readObject());
-           jTextField4.setText((String) d.readObject());
-           jTextField5.setText((String) d.readObject());
-           jTextField6.setText((String) d.readObject());
-           jTextField7.setText((String) d.readObject());
-           jTextField8.setText((String) d.readObject());
-           jTextField9.setText((String) d.readObject());
-           jTextField10.setText((String) d.readObject());
-           jTextField11.setText((String) d.readObject());
-           jTextField12.setText((String) d.readObject());
-           jTextField13.setText((String) d.readObject());
-           jTextField14.setText((String) d.readObject());
-           jTextField15.setText((String) d.readObject());
-           jTextArea1.setText((String) d.readObject());
-           jTextArea2.setText((String) d.readObject());
-           x = (String) d.readObject();
-           y = (String) d.readObject();
-           height = (String) d.readObject();
-           width = (String) d.readObject();
-           index = (String) d.readObject();
-           d.close();
+            d = new XMLDecoder(new BufferedInputStream(new FileInputStream("qrcode.xml")));
+            jTextField1.setText((String) d.readObject());
+            jTextField2.setText((String) d.readObject());
+            jTextField3.setText((String) d.readObject());
+            jTextField4.setText((String) d.readObject());
+            jTextField5.setText((String) d.readObject());
+            jTextField6.setText((String) d.readObject());
+            jTextField7.setText((String) d.readObject());
+            jTextField8.setText((String) d.readObject());
+            jTextField9.setText((String) d.readObject());
+            jTextField10.setText((String) d.readObject());
+            jTextField11.setText((String) d.readObject());
+            jTextField12.setText((String) d.readObject());
+            jTextField13.setText((String) d.readObject());
+            jTextField14.setText((String) d.readObject());
+            jTextField15.setText((String) d.readObject());
+            jTextArea1.setText((String) d.readObject());
+            jTextArea2.setText((String) d.readObject());
+            x = (String) d.readObject();
+            y = (String) d.readObject();
+            height = (String) d.readObject();
+            width = (String) d.readObject();
+            index = (String) d.readObject();
+            d.close();
         } catch (Exception ex) {
             ex.getMessage();
         }
@@ -231,11 +237,10 @@ public class QrcodeGenerator extends javax.swing.JFrame {
         jTabbedPane6.setSelectedIndex(Integer.valueOf(index));
     }
 
-
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -288,6 +293,14 @@ public class QrcodeGenerator extends javax.swing.JFrame {
         jTextField14 = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jTextField15 = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel19 = new javax.swing.JLabel();
+        jTextField16 = new javax.swing.JTextField();
+        jLabel20 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTextArea3 = new javax.swing.JTextArea();
+        jLabel21 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
@@ -512,7 +525,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14));
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel10.setText("Add Organization");
 
         jLabel11.setText("Company Name");
@@ -533,7 +546,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
             }
         });
 
-        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 14));
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel13.setText("Address");
 
         jLabel14.setText("Street");
@@ -565,7 +578,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
 
         jLabel17.setText("Zip");
 
-        jTextField14.setFont(new java.awt.Font("Tahoma", 0, 18));
+        jTextField14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jTextField14.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField4KeyReleased(evt);
@@ -711,6 +724,74 @@ public class QrcodeGenerator extends javax.swing.JFrame {
 
         jTabbedPane6.addTab("Contact", jScrollPane3);
 
+        jLabel19.setText("SSID");
+
+        jTextField16.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField16KeyReleased(evt);
+            }
+        });
+
+        jLabel20.setText("Password");
+
+        jTextArea3.setColumns(20);
+        jTextArea3.setRows(5);
+        jTextArea3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextArea3KeyReleased(evt);
+            }
+        });
+        jScrollPane4.setViewportView(jTextArea3);
+
+        jLabel21.setText("Encrypt");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "WPA", "WPA2", "WEP", "nopass" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jTextField16)
+                    .add(jComboBox1, 0, 233, Short.MAX_VALUE)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jLabel19)
+                            .add(jLabel21))
+                        .add(0, 0, Short.MAX_VALUE)))
+                .add(18, 18, 18)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jScrollPane4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 292, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel20)))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel19)
+                    .add(jLabel20))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jTextField16, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jLabel21)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jScrollPane4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(452, Short.MAX_VALUE))
+        );
+
+        jTabbedPane6.addTab("Wifi", jPanel2);
+
         jButton2.setText("Save to disk");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -733,7 +814,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jPanel1Layout.createSequentialGroup()
-                        .add(jButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                        .add(jButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jButton2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 124, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -753,7 +834,7 @@ public class QrcodeGenerator extends javax.swing.JFrame {
                         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(jButton2)
                             .add(jButton1))
-                        .add(0, 308, Short.MAX_VALUE)))
+                        .add(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -779,7 +860,7 @@ private void jTextArea1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:eve
 }//GEN-LAST:event_jTextArea1KeyReleased
 
 private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
-       generateQrCode(jTextField2.getText());
+    generateQrCode(jTextField2.getText());
 }//GEN-LAST:event_jTextField2KeyReleased
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -796,7 +877,7 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void jTabbedPane6StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane6StateChanged
     javax.swing.JTabbedPane jt = (javax.swing.JTabbedPane) evt.getSource();
-    switch(jt.getSelectedIndex()) {
+    switch (jt.getSelectedIndex()) {
         case 0:
             generateQrCode(jTextField2.getText());
             break;
@@ -817,17 +898,17 @@ private void jTabbedPane6StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-
             break;
         case 4:
             generateQrCode(ADDRESS_TEMPLATE.replace("{FN}", jTextField4.getText())
-            .replace("{LN}", jTextField5.getText())
-            .replace("{PHONE}", jTextField6.getText())
-            .replace("{EMAIL}", jTextField7.getText())
-            .replace("{WEBSITE}", jTextField8.getText())
-            .replace("{COMPANYNAME}", jTextField9.getText())
-            .replace("{TITLE}", jTextField10.getText())
-            .replace("{STREET}", jTextField11.getText())
-            .replace("{CITY}", jTextField12.getText())
-            .replace("{STATE}", jTextField13.getText())
-            .replace("{ZIP}", jTextField14.getText())
-            .replace("{COUNTRY}", jTextField15.getText())
+                    .replace("{LN}", jTextField5.getText())
+                    .replace("{PHONE}", jTextField6.getText())
+                    .replace("{EMAIL}", jTextField7.getText())
+                    .replace("{WEBSITE}", jTextField8.getText())
+                    .replace("{COMPANYNAME}", jTextField9.getText())
+                    .replace("{TITLE}", jTextField10.getText())
+                    .replace("{STREET}", jTextField11.getText())
+                    .replace("{CITY}", jTextField12.getText())
+                    .replace("{STATE}", jTextField13.getText())
+                    .replace("{ZIP}", jTextField14.getText())
+                    .replace("{COUNTRY}", jTextField15.getText())
             );
             break;
     }
@@ -837,10 +918,10 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     TransferableImage trans = new TransferableImage(image);
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     clipboard.setContents(trans, new ClipboardOwner() {
-            public void lostOwnership(Clipboard clpbrd, Transferable t) {
-                // Ignore
-            }
-        } );
+        public void lostOwnership(Clipboard clpbrd, Transferable t) {
+            // Ignore
+        }
+    });
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
@@ -871,13 +952,35 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
             .replace("{STATE}", jTextField13.getText())
             .replace("{ZIP}", jTextField14.getText())
             .replace("{COUNTRY}", jTextField15.getText())
-            );
+    );
 }//GEN-LAST:event_jTextField4KeyReleased
 
+    private void jTextField16KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField16KeyReleased
+        changeWifi();
+    }//GEN-LAST:event_jTextField16KeyReleased
+
+    private void jTextArea3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea3KeyReleased
+        changeWifi();
+    }//GEN-LAST:event_jTextArea3KeyReleased
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+changeWifi();        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+    public void changeWifi() {
+        String ssid = jTextField16.getText();
+        if (!StringUtils.isBlank(ssid)) {
+            String pass = jTextArea3.getText();
+            String encript = jComboBox1.getSelectedItem().toString();
+            Object[] args = {encript, ssid, pass,};
+            MessageFormat messageFormat = new MessageFormat("WIFI:T:{0};S:{1};P:{2};;");
+            String result = messageFormat.format(args);
+            generateQrCode(result);
+        }
+
+    }
 
     private static void setLookAndFeel()
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
-    {
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
         javax.swing.UIManager.LookAndFeelInfo infos[] = UIManager.getInstalledLookAndFeels();
         String firstFoundClass = null;
         for (javax.swing.UIManager.LookAndFeelInfo info : infos) {
@@ -891,7 +994,7 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
             }
         }
 
-        if(null == firstFoundClass)  {
+        if (null == firstFoundClass) {
             throw new IllegalArgumentException("No suitable Swing looks and feels");
         } else {
             UIManager.setLookAndFeel(firstFoundClass);
@@ -909,10 +1012,11 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -923,7 +1027,10 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -932,6 +1039,7 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -941,11 +1049,13 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane6;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
@@ -953,6 +1063,7 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
     private javax.swing.JTextField jTextField13;
     private javax.swing.JTextField jTextField14;
     private javax.swing.JTextField jTextField15;
+    private javax.swing.JTextField jTextField16;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
@@ -980,7 +1091,7 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
             image = new BufferedImage(CrunchifyWidth, CrunchifyWidth,
                     BufferedImage.TYPE_INT_RGB);
             image.createGraphics();
-            Graphics2D graphics=(Graphics2D)image.getGraphics();
+            Graphics2D graphics = (Graphics2D) image.getGraphics();
             graphics.setColor(Color.WHITE);
             graphics.fillRect(0, 0, CrunchifyWidth, CrunchifyWidth);
             graphics.setColor(Color.BLACK);
@@ -996,5 +1107,5 @@ private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:ev
             Logger.getLogger(QrcodeGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }
